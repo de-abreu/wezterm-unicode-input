@@ -1,79 +1,71 @@
 # WezTerm Unicode Input
 
-A WezTerm plugin that intercepts unicode escape sequences and translates them to their respective characters, bypassing the character selection menu.
+A WezTerm plugin that intercepts unicode escape sequences and translates them to
+their respective characters, bypassing the character selection menu.
 
 ## Use Case
 
-This plugin was created to enable seamless use of non-standard character sets on keyboards that lack them natively.
+This plugin was created to enable seamless use of non-standard character sets on
+keyboards that lack them natively. Solves
+[wezterm/issues/7063](https://github.com/wezterm/wezterm/issues/7063).
 
 **Example:** Writing Romanian on a Brazilian ABNT2 keyboard.
 
-On the ABNT2 layout, many characters specific to Romanian (like ă, â, ș, ț) don't have dedicated keys. While WezTerm provides a built-in character selection menu (`Ctrl+/`), triggering it for every special character disrupts workflow.
+On the ABNT2 layout, many characters specific to Romanian (like ă, â, ș, ț)
+don't have dedicated keys. While WezTerm provides a built-in character selection
+menu, triggering it for every special character disrupts workflow.
 
 ### The Solution
 
-1. **Kanata** (keyboard layout remapper) is configured to send unicode escape sequences when the user types specific key combinations:
+1. **Kanata** (keyboard layout remapper) is configured trigger macros of the
+   form:
 
-   ```
-   ç + a → sends unicode sequence 103
-   ç + f → sends unicode sequence e2 (â)
-   ```
+```
+(<trigger key combination>) (<unicode hex without leading zeroes>) (Enter)
+```
 
-2. **WezTerm Unicode Input** captures these sequences and translates them directly to the corresponding characters.
+> [!NOTE]
+>
+> The trigger combo in Kanata is `<C-S-u>`, but for the purposes of this plugin
+> could be any other. Also the confirmation key can be either `<Enter>` or
+> `<Space>`.
 
-This allows typing Romanian characters as naturally as standard characters—no menus, no interruptions.
+2. **WezTerm Unicode Input** captures these sequences and translates them
+   directly to the corresponding characters.
+
+This allows typing Romanian characters as naturally as standard characters — no
+menus, no interruptions.
 
 ## Installation
 
-1. Clone this repository to your WezTerm config directory:
+Either add the following line to `wezterm.lua`:
 
-   ```bash
-   git clone https://github.com/de-abreu/wezterm-unicode-input.git ~/.config/wezterm/plugins/wezterm-unicode-input
-   ```
+```lua
+local unicode_input = wezterm.plugin.require "https://github.com/de-abreu/wezterm-unicode-input"
+```
 
-2. Add the following to your `wezterm.lua`:
-
-   ```lua
-   local unicode_input = dofile(os.getenv("HOME") .. "/.config/wezterm/plugins/wezterm-unicode-input/init.lua")
-
-   local config = wezterm.config_builder()
-
-   unicode_input.apply_to_config(config, {
-     sequences = {
-       ["103"] = "ă",
-       ["102"] = "Ă",
-       ["e2"] = "â",
-       ["c2"] = "Â",
-       ["ea"] = "ê",
-       ["ca"] = "Ê",
-       ["ee"] = "î",
-       ["ce"] = "Î",
-       ["f4"] = "ô",
-       ["d4"] = "Ô",
-       ["fb"] = "û",
-       ["db"] = "Û",
-       ["219"] = "ș",
-       ["218"] = "Ș",
-       ["21b"] = "ț",
-       ["21a"] = "Ț",
-     },
-   })
-   ```
+Or to a module definition that gets exported to `wezterm.lua`, either way the
+plugin will be available.
 
 ## Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `sequences` | table | `{}` | A mapping of hex key sequences to characters |
-| `trigger_key` | string | `"u"` | The key that activates the input sequence |
-| `trigger_mods` | string | `"CTRL\|SHIFT"` | Modifier keys for the trigger |
-| `timeout_milliseconds` | number | `1000` | Time allowed to complete a sequence |
+| Option                 | Type   | Default         | Description                                  |
+| ---------------------- | ------ | --------------- | -------------------------------------------- |
+| `sequences`            | table  | `{}`            | A mapping of hex key sequences to characters |
+| `trigger_key`          | string | `"u"`           | The key that activates the input sequence    |
+| `trigger_mods`         | string | `"CTRL\|SHIFT"` | Modifier keys for the trigger                |
+| `timeout_milliseconds` | number | `1000`          | Time allowed to complete a sequence          |
 
-### Sequence Mapping Format
-
-The keys in `sequences` are the hex codes sent by your keyboard remapper. For example, if kanata sends `"103"` when you type `ç + a`, map it to `"ă"`.
+> [!WARNING] Retaining access to the character selection menu
+>
+> By default, the trigger key and mods clash with those Wezterm has defined for
+> its character selection menu. To retain access to it, its is recommended to
+> change its keybind. See the example configuration.
 
 ## Example Configuration
+
+Here is my Wezterm + Kanata configuration with Wezterm Unicode Input added as a
+module.
 
 ### WezTerm (`wezterm.lua`)
 
@@ -182,7 +174,3 @@ return module
     ├── tab-bar.lua
     └── unicode-input.lua
 ```
-
-## License
-
-MIT

@@ -56,7 +56,7 @@ plugin will be available.
 | `trigger_mods`         | string | `"CTRL\|SHIFT"` | Modifier keys for the trigger                |
 | `timeout_milliseconds` | number | `1000`          | Time allowed to complete a sequence          |
 
-> [!WARNING] Retaining access to the character selection menu
+> [!WARNING]
 >
 > By default, the trigger key and mods clash with those Wezterm has defined for
 > its character selection menu. To retain access to it, its is recommended to

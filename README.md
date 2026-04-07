@@ -13,7 +13,7 @@ keyboards that lack them natively. Solves
 
 On the ABNT2 layout, many characters specific to Romanian (like ă, â, ș, ț)
 don't have dedicated keys. While WezTerm provides a built-in character selection
-menu, triggering it for every special character disrupts workflow.
+menu, but triggering it for every special character disrupts workflow.
 
 ### The Solution
 
@@ -73,7 +73,8 @@ module.
 local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
-require("modules.unicode-input").apply_to_config(config)
+-- other modules...
+require("modules.keyvinds.unicode-input").apply_to_config(config)
 
 return config
 ```
@@ -82,7 +83,7 @@ return config
 
 ```lua
 local wezterm = require "wezterm"
-local unicode_input = dofile "/path/to/wezterm-unicode-input/init.lua"
+local unicode_input = wezterm.plugin.require "https://github.com/de-abreu/wezterm-unicode-input"
 local module = {}
 
 function module.apply_to_config(config)
@@ -163,14 +164,8 @@ return module
 ~/.config/wezterm/
 ├── wezterm.lua
 └── modules/
-    ├── appearance.lua
     ├── keybinds/
-    │   ├── overrides.lua
-    │   ├── panes-and-tabs.lua
-    │   └── smart-splits.lua
-    ├── multiplexing.lua
-    ├── rendering.lua
-    ├── scrollback-nvim.lua
-    ├── tab-bar.lua
-    └── unicode-input.lua
+    │   ├── ...
+    │   └── unicode-input.lua
+    └── ...
 ```

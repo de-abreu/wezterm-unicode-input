@@ -38,14 +38,19 @@ menus, no interruptions.
 
 ## Installation
 
-Either add the following line to `wezterm.lua`:
+### Option 1: Direct in `wezterm.lua`
+
+Add the following line to `wezterm.lua`:
 
 ```lua
 local unicode_input = wezterm.plugin.require "https://github.com/de-abreu/wezterm-unicode-input"
 ```
 
-Or to a module definition that gets exported to `wezterm.lua`, either way the
-plugin will be available.
+### Option 2: Module-based
+
+Add the plugin to a module definition that gets exported to `wezterm.lua`. This
+allows you to customize the configuration as shown in the Example Configuration
+below.
 
 ## Configuration Options
 
@@ -59,27 +64,36 @@ plugin will be available.
 > [!WARNING]
 >
 > By default, the trigger key and mods clash with those Wezterm has defined for
-> its character selection menu. To retain access to it, its is recommended to
+> its character selection menu. To retain access to it, it is recommended to
 > change its keybind. See the example configuration.
+
+## Behavior
+
+- If the sequence times out (no input received within `timeout_milliseconds`),
+  the trigger key press is ignored and no character is inserted.
+- If an unrecognized hex code is entered, the raw input is passed through as-is
+  (the trigger key press is consumed but no substitution occurs).
 
 ## Example Configuration
 
 Here is my Wezterm + Kanata configuration with Wezterm Unicode Input added as a
 module.
 
-### WezTerm (`wezterm.lua`)
+### Wezterm configuration
+
+> File: `~/.config/wezterm/wezterm.lua`
 
 ```lua
 local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
 -- other modules...
-require("modules.keyvinds.unicode-input").apply_to_config(config)
+require("modules.keybinds.unicode-input").apply_to_config(config)
 
 return config
 ```
 
-### Module (`modules/unicode-input.lua`)
+File: `~/.config/wezterm/modules/keybinds/unicode-input.lua`
 
 ```lua
 local wezterm = require "wezterm"
@@ -122,7 +136,9 @@ end
 return module
 ```
 
-### Kanata (`special-accents-layer.nix`)
+### Kanata configuration
+
+> File: special-accent-layer.nix
 
 ```nix
 {
